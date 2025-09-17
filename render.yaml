@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: global-team-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: FRONTEND_ORIGIN
+        value: https://global-team-frontend.onrender.com
+  - type: static_site
+    name: global-team-frontend
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_BASE
+        value: https://global-team-backend.onrender.com
+
