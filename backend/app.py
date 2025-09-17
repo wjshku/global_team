@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 
 import json
 from datetime import datetime, timezone
@@ -9,6 +10,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from fastapi.middleware.cors import CORSMiddleware
 
 try:
     from zoneinfo import ZoneInfo, available_timezones  # Python 3.9+
@@ -222,6 +224,17 @@ def parse_local_to_utc(date_str: str, time_str: str, tz_name: str) -> datetime:
 
 
 app = FastAPI(title="Global Team Manager", version="0.1.0")
+
+# Enable permissive CORS by default; tighten origins via env FRONTEND_ORIGIN if desired
+frontend_origin = os.environ.get("FRONTEND_ORIGIN")
+allow_origins = [frontend_origin] if frontend_origin else ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allow_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Serve built Vue assets at /assets if available
 if FRONTEND_DIST.exists():

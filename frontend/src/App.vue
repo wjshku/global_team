@@ -544,11 +544,13 @@ const tzOptionsDisplay = computed(() => filterTzs(tzSearchDisplay.value))
 const tzOptionsMeet = computed(() => filterTzs(tzSearchMeet.value))
 
 // API helper with error handling
+const API_BASE = (typeof __API_BASE__ !== 'undefined' && __API_BASE__) ? __API_BASE__ : ''
+
 async function api(payload) {
   try {
     loading.value = true
     error.value = ''
-    const res = await fetch('/app', {
+    const res = await fetch(`${API_BASE || ''}/app`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
