@@ -4,7 +4,7 @@
       <div class="header-brand">
         <h1 class="brand-title">
           <span class="brand-icon">🌍</span>
-          Global Team Manager
+          {{ appName }}
         </h1>
       </div>
       
@@ -30,6 +30,7 @@ import { computed } from 'vue'
 import { useAuthStore } from '@/store/modules/auth'
 import { useUIStore } from '@/store/modules/ui'
 import { useRouter } from 'vue-router'
+import { APP_NAME } from '@/utils/constants'
 
 const authStore = useAuthStore()
 const uiStore = useUIStore()
@@ -45,6 +46,8 @@ const handleLogout = () => {
   authStore.logout()
   router.push('/')
 }
+
+const appName = APP_NAME
 </script>
 
 <style scoped>

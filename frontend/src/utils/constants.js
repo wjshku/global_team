@@ -1,4 +1,5 @@
 // App-wide constants - configuration values, enums, magic numbers
+export const APP_NAME = 'MeeTime'
 
 /**
  * API Configuration

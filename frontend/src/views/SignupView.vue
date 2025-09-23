@@ -3,7 +3,7 @@
     <div class="signup-container">
       <h1 class="signup-title">Create Account</h1>
       <p class="signup-description">
-        Join the Global Team Manager to coordinate with your distributed team.
+        Join {{ appName }} to coordinate with your distributed team.
       </p>
       
       <div class="signup-form-container">
@@ -22,11 +22,17 @@
 
 <script>
 import SignupCard from '@/components/features/SignupCard.vue'
+import { APP_NAME } from '@/utils/constants'
 
 export default {
   name: 'SignupView',
   components: {
     SignupCard
+  },
+  data() {
+    return {
+      appName: APP_NAME
+    }
   },
   methods: {
     handleSignupSuccess(userData) {
