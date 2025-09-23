@@ -1,20 +1,28 @@
 {
   "name": "global-team-frontend",
-  "private": true,
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "Frontend for Global Team coordination app",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "vue": "^3.4.38"
+    "pinia": "^2.1.7",
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.2",
-    "vite": "^5.4.6"
+    "@vitejs/plugin-vue": "^6.0.1",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^8.56.0",
+    "eslint-plugin-vue": "^9.19.2",
+    "postcss": "^8.5.6",
+    "vite": "^7.1.6"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
-
-
