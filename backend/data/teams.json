@@ -1,10 +1,1 @@
-{
-  "Track B": [
-    "Junshi",
-    "James"
-  ],
-  "Track C": [
-    "Junshi",
-    "Lily"
-  ]
-}
+{"test-team-10f13a0d":{"id":"test-team-10f13a0d","name":"Test Team","description":"For testing","timezone":"Asia/Singapore","members":["junshi-wang","james"],"admin":"junshi-wang","memberCount":2,"meetingCount":0,"createdAt":"2025-09-23T16:39:41.371101"}}
