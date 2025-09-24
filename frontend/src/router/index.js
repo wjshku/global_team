@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
 import SignupView from '../views/SignupView.vue'
 import PersonalView from '../views/PersonalView.vue'
 import TeamView from '../views/TeamView.vue'
@@ -18,6 +19,12 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: { title: 'Home' }
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
+    meta: { title: 'Sign In' }
   },
   {
     path: '/signup',
@@ -125,8 +132,8 @@ router.beforeEach(async (to, from, next) => {
 
   const auth = useAuthStore()
   if (!auth.isLoggedIn) {
-    console.debug('[Router.beforeEach] blocked: requiresAuth but user not logged in, redirecting to home')
-    return next({ name: 'home' })
+    console.debug('[Router.beforeEach] blocked: requiresAuth but user not logged in, redirecting to login')
+    return next({ name: 'login' })
   }
 
   // Redirect generic personal route to the logged-in user's personal route

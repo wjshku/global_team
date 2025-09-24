@@ -4,14 +4,14 @@
       <div class="auth-card">
         <div class="auth-card__content">
           <div class="auth-header">
-            <h1 class="auth-title">Create account</h1>
-            <p class="auth-description">Join {{ appName }} and collaborate across time zones</p>
+            <h1 class="auth-title">Welcome back</h1>
+            <p class="auth-description">Sign in to continue to {{ appName }}</p>
           </div>
           <div class="auth-form-container">
-            <SignupCard 
-              ref="signupCard"
-              @signup="handleSignupSuccess" 
-              @switch-to-login="goToLogin"
+            <LoginCard 
+              ref="loginCard"
+              @login="handleLoginSuccess" 
+              @switch-to-signup="goToSignup"
             />
           </div>
         </div>
@@ -21,14 +21,14 @@
 </template>
 
 <script>
-import SignupCard from '@/components/features/SignupCard.vue'
+import LoginCard from '@/components/features/LoginCard.vue'
 import { APP_NAME } from '@/utils/constants'
 import { useAuthStore } from '@/store/modules/auth'
 
 export default {
-  name: 'SignupView',
+  name: 'LoginView',
   components: {
-    SignupCard
+    LoginCard
   },
   data() {
     return {
@@ -41,19 +41,19 @@ export default {
     await authStore.initializeAuth()
     
     if (authStore.isLoggedIn) {
-      console.log('SignupView: User already authenticated, redirecting to home')
+      console.log('LoginView: User already authenticated, redirecting to home')
       this.$router.push('/')
     }
   },
   methods: {
-    handleSignupSuccess(userData) {
-      console.log('SignupView: Signup successful', userData)
+    handleLoginSuccess(userData) {
+      console.log('LoginView: Login successful', userData)
       // Navigate to home page
       this.$router.push('/')
     },
     
-    goToLogin() {
-      this.$router.push('/login')
+    goToSignup() {
+      this.$router.push('/signup')
     }
   }
 }

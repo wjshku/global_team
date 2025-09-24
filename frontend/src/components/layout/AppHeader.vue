@@ -4,8 +4,9 @@
       <div class="header-brand">
         <h1 class="brand-title">
           <span class="brand-icon">🌍</span>
-          {{ appName }}
+          <router-link to="/" class="brand-link">{{ appName }}</router-link>
         </h1>
+        <p class="brand-description">Your Work Across Timezones</p>
       </div>
       
       <div class="header-actions">
@@ -18,6 +19,13 @@
           <span class="welcome-text">Welcome, {{ currentUser?.name || 'User' }}</span>
           <button @click="handleLogout" class="logout-btn">
             Logout
+          </button>
+        </template>
+        
+        <template v-else>
+          <button @click="navigateToSignup" class="signup-btn">
+            <span class="btn-icon">🚀</span>
+            Get Started
           </button>
         </template>
       </div>
@@ -47,6 +55,10 @@ const handleLogout = () => {
   router.push('/')
 }
 
+const navigateToSignup = () => {
+  router.push('/signup')
+}
+
 const appName = APP_NAME
 </script>
 
@@ -74,6 +86,23 @@ const appName = APP_NAME
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.brand-link {
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.brand-link:hover {
+  opacity: 0.8;
+}
+
+.brand-description {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 400;
 }
 
 .brand-icon {
@@ -122,6 +151,31 @@ const appName = APP_NAME
 .logout-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   border-color: rgba(255, 255, 255, 0.5);
+}
+
+.signup-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.signup-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  font-size: 1rem;
 }
 
 @media (max-width: 768px) {

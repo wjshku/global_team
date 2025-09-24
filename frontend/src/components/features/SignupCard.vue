@@ -1,406 +1,643 @@
-<!-- SignupCard.vue - Component for user registration -->
 <template>
-  <BaseCard 
-    title="Create Account" 
-    class="signup-card"
-    :class="{ 'signup-card--loading': loading }"
-  >
-    <BaseForm
-      :model-value="formData"
-      :rules="validationRules"
-      :disabled="disabled"
-      :loading="loading"
-      submit-text="Create Account"
-      @submit="handleSubmit"
-    >
-      <template #default="{ formData, errors }">
-        <!-- Name Field -->
-        <div class="form-field">
-          <label for="name" class="form-label">Full Name</label>
-          <input
-            id="name"
-            v-model="formData.name"
-            type="text"
-            class="form-input"
-            :class="{ 'form-input--error': errors.name }"
-            placeholder="Enter your full name"
-            :disabled="disabled || loading"
-            @blur="validateField('name')"
-          />
-          <div v-if="errors.name" class="form-error">
-            {{ errors.name }}
-          </div>
-        </div>
+  <div class="signup-card">
+    <form @submit.prevent="handleSignup" class="signup-form">
+      <div class="form-group">
+        <label for="signup-name" class="form-label">Full Name</label>
+        <input
+          id="signup-name"
+          v-model="formData.name"
+          type="text"
+          class="form-input"
+          :class="{ 'form-input--error': errors.name }"
+          placeholder="Enter your full name"
+          required
+          autocomplete="name"
+          @blur="validateName"
+        />
+        <div v-if="errors.name" class="form-error">{{ errors.name }}</div>
+      </div>
 
-        <!-- Email Field -->
-        <div class="form-field">
-          <label for="email" class="form-label">Email Address</label>
-          <input
-            id="email"
-            v-model="formData.email"
-            type="email"
-            class="form-input"
-            :class="{ 'form-input--error': errors.email }"
-            placeholder="Enter your email"
-            :disabled="disabled || loading"
-            @blur="validateField('email')"
-          />
-          <div v-if="errors.email" class="form-error">
-            {{ errors.email }}
-          </div>
-        </div>
+      <div class="form-group">
+        <label for="signup-email" class="form-label">Email</label>
+        <input
+          id="signup-email"
+          v-model="formData.email"
+          type="email"
+          class="form-input"
+          :class="{ 'form-input--error': errors.email }"
+          placeholder="Enter your email"
+          required
+          autocomplete="email"
+          @blur="validateEmail"
+        />
+        <div v-if="errors.email" class="form-error">{{ errors.email }}</div>
+      </div>
 
-        <!-- Password Field -->
-        <div class="form-field">
-          <label for="password" class="form-label">Password</label>
+      <div class="form-group">
+        <label for="signup-password" class="form-label">Password</label>
+        <div class="password-input-wrapper">
           <input
-            id="password"
+            id="signup-password"
             v-model="formData.password"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
             class="form-input"
             :class="{ 'form-input--error': errors.password }"
             placeholder="Create a password"
-            :disabled="disabled || loading"
-            @blur="validateField('password')"
+            required
+            autocomplete="new-password"
+            @blur="validatePassword"
+            @input="validatePassword"
           />
-          <div v-if="errors.password" class="form-error">
-            {{ errors.password }}
-          </div>
-        </div>
-
-        <!-- Confirm Password Field -->
-        <div class="form-field">
-          <label for="confirmPassword" class="form-label">Confirm Password</label>
-          <input
-            id="confirmPassword"
-            v-model="formData.confirmPassword"
-            type="password"
-            class="form-input"
-            :class="{ 'form-input--error': errors.confirmPassword }"
-            placeholder="Confirm your password"
-            :disabled="disabled || loading"
-            @blur="validateField('confirmPassword')"
-          />
-          <div v-if="errors.confirmPassword" class="form-error">
-            {{ errors.confirmPassword }}
-          </div>
-        </div>
-
-        <!-- Timezone Field -->
-        <div class="form-field">
-          <label for="timezone" class="form-label">Timezone</label>
-          <select
-            id="timezone"
-            v-model="formData.timezone"
-            class="form-select"
-            :class="{ 'form-select--error': errors.timezone }"
-            :disabled="disabled || loading"
-            @blur="validateField('timezone')"
+          <button
+            type="button"
+            class="password-toggle"
+            @click="togglePasswordVisibility"
+            :aria-label="showPassword ? 'Hide password' : 'Show password'"
           >
-            <option value="">Select your timezone</option>
-            <option 
-              v-for="tz in timezoneOptions" 
-              :key="tz.value" 
-              :value="tz.value"
-            >
-              {{ tz.label }}
-            </option>
-          </select>
-          <div v-if="errors.timezone" class="form-error">
-            {{ errors.timezone }}
+            <svg v-if="!showPassword" class="password-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            <svg v-else class="password-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+            </svg>
+          </button>
+        </div>
+        <div v-if="errors.password" class="form-error">{{ errors.password }}</div>
+        <div v-if="passwordStrength.show" class="password-strength">
+          <div class="password-strength-bar">
+            <div 
+              class="password-strength-fill" 
+              :class="passwordStrength.level"
+              :style="{ width: passwordStrength.percentage + '%' }"
+            ></div>
           </div>
+          <div class="password-strength-text">{{ passwordStrength.text }}</div>
         </div>
-
-        <!-- Terms and Conditions -->
-        <div class="form-field form-field--checkbox">
-          <label class="checkbox-label">
-            <input
-              v-model="formData.acceptTerms"
-              type="checkbox"
-              class="checkbox-input"
-              :disabled="disabled || loading"
-            />
-            <span class="checkbox-text">
-              I agree to the 
-              <a href="#" class="link" @click.prevent="$emit('show-terms')">Terms of Service</a>
-              and 
-              <a href="#" class="link" @click.prevent="$emit('show-privacy')">Privacy Policy</a>
-            </span>
-          </label>
-          <div v-if="errors.acceptTerms" class="form-error">
-            {{ errors.acceptTerms }}
-          </div>
-        </div>
-
-        <!-- Error Message -->
-        <div v-if="errorMessage" class="form-error-message">
-          {{ errorMessage }}
-        </div>
-      </template>
-    </BaseForm>
-
-    <!-- Footer Actions -->
-    <template #footer>
-      <div class="signup-card__footer">
-        <BaseButton
-          variant="secondary"
-          size="small"
-          @click="$emit('switch-to-login')"
-          :disabled="disabled || loading"
-        >
-          Already have an account? Sign in
-        </BaseButton>
       </div>
-    </template>
-  </BaseCard>
+
+      <div class="form-group">
+        <label for="signup-timezone" class="form-label">Timezone</label>
+        <select
+          id="signup-timezone"
+          v-model="formData.timezone"
+          class="form-select"
+          :class="{ 'form-select--error': errors.timezone }"
+          required
+          @blur="validateTimezone"
+        >
+          <option value="" disabled>Select your timezone</option>
+          <option 
+            v-for="tz in timezones" 
+            :key="tz.tz" 
+            :value="tz.tz"
+          >
+            {{ formatTimezoneLabel(tz) }}
+          </option>
+        </select>
+        <div v-if="errors.timezone" class="form-error">{{ errors.timezone }}</div>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-wrapper">
+          <input
+            v-model="formData.agreeToTerms"
+            type="checkbox"
+            class="checkbox-input"
+            required
+          />
+          <span class="checkbox-label">
+            I agree to the 
+            <a href="#" class="terms-link" @click.prevent="showTerms">Terms of Service</a>
+            and 
+            <a href="#" class="terms-link" @click.prevent="showPrivacy">Privacy Policy</a>
+          </span>
+        </label>
+        <div v-if="errors.agreeToTerms" class="form-error">{{ errors.agreeToTerms }}</div>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn--primary btn--full"
+          :disabled="isLoading || !isFormValid"
+        >
+          <span v-if="isLoading" class="btn-spinner"></span>
+          {{ isLoading ? 'Creating account...' : 'Create account' }}
+        </button>
+      </div>
+
+      <div class="form-footer">
+        <p class="form-footer-text">
+          Already have an account?
+          <button
+            type="button"
+            class="form-link"
+            @click="switchToLogin"
+          >
+            Sign in
+          </button>
+        </p>
+      </div>
+    </form>
+  </div>
 </template>
 
-<script setup>
-import { ref, reactive, computed } from 'vue'
+<script>
 import { useAuthStore } from '@/store/modules/auth'
-import BaseCard from '@/components/common/BaseCard.vue'
-import BaseForm from '@/components/common/BaseForm.vue'
-import BaseButton from '@/components/common/BaseButton.vue'
-import { isValidEmail, validatePassword, validateRequired } from '@/utils/validation'
+import { isValidEmail, validatePassword } from '@/utils/validation'
 import { getUnifiedTimezones, formatTimezoneCurrentLabel } from '@/utils/timezone'
-import { VALIDATION_RULES, ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/utils/constants'
 
-// Props definition
-const props = defineProps({
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  initialEmail: {
-    type: String,
-    default: ''
-  }
-})
-
-// Emits definition
-const emit = defineEmits(['signup', 'switch-to-login', 'show-terms', 'show-privacy', 'error'])
-
-// Store
-const authStore = useAuthStore()
-
-// Form data
-const formData = reactive({
-  name: '',
-  email: props.initialEmail,
-  password: '',
-  confirmPassword: '',
-  timezone: '',
-  acceptTerms: false
-})
-
-// Error state
-const errorMessage = ref('')
-
-// Timezone options built from unified list with current labels
-const timezoneOptions = getUnifiedTimezones().map(({ tz, city }) => ({
-  value: tz,
-  label: formatTimezoneCurrentLabel(tz)
-}))
-
-// Validation rules using utility functions
-const validationRules = {
-  name: [
-    { required: true, message: 'Full name is required' },
-    { min: VALIDATION_RULES.TEAM_NAME.MIN_LENGTH, message: `Name must be at least ${VALIDATION_RULES.TEAM_NAME.MIN_LENGTH} characters` }
-  ],
-  email: [
-    { required: true, message: 'Email is required' },
-    { 
-      validator: (value) => isValidEmail(value) || 'Please enter a valid email address'
+export default {
+  name: 'SignupCard',
+  emits: ['signup', 'switch-to-login'],
+  data() {
+    return {
+      formData: {
+        name: '',
+        email: '',
+        password: '',
+        timezone: '',
+        agreeToTerms: false
+      },
+      errors: {
+        name: '',
+        email: '',
+        password: '',
+        timezone: '',
+        agreeToTerms: ''
+      },
+      showPassword: false,
+      isLoading: false,
+      timezones: getUnifiedTimezones()
     }
-  ],
-  password: [
-    { required: true, message: 'Password is required' },
-    {
-      validator: (value) => {
-        const result = validatePassword(value)
-        return result.isValid || result.message
+  },
+  computed: {
+    isFormValid() {
+      return this.formData.name && 
+             this.formData.email && 
+             this.formData.password && 
+             this.formData.timezone &&
+             this.formData.agreeToTerms &&
+             !this.errors.name && 
+             !this.errors.email && 
+             !this.errors.password && 
+             !this.errors.timezone &&
+             !this.errors.agreeToTerms
+    },
+    
+    passwordStrength() {
+      if (!this.formData.password) {
+        return { show: false }
+      }
+      
+      const validation = validatePassword(this.formData.password)
+      const length = this.formData.password.length
+      
+      if (length < 6) {
+        return {
+          show: true,
+          level: 'weak',
+          percentage: 25,
+          text: 'Too short'
+        }
+      } else if (length < 8) {
+        return {
+          show: true,
+          level: 'fair',
+          percentage: 50,
+          text: 'Fair'
+        }
+      } else if (validation.isValid) {
+        return {
+          show: true,
+          level: 'strong',
+          percentage: 100,
+          text: 'Strong'
+        }
+      } else {
+        return {
+          show: true,
+          level: 'fair',
+          percentage: 75,
+          text: 'Good'
+        }
       }
     }
-  ],
-  confirmPassword: [
-    { required: true, message: 'Please confirm your password' },
-    {
-      validator: (value) => value === formData.password || 'Passwords do not match'
+  },
+  mounted() {
+    // Set default timezone to user's current timezone
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    if (this.timezones.find(tz => tz.tz === userTimezone)) {
+      this.formData.timezone = userTimezone
     }
-  ],
-  timezone: [
-    { required: true, message: 'Please select your timezone' }
-  ],
-  acceptTerms: [
-    {
-      validator: (value) => value === true || 'You must accept the terms and conditions'
+  },
+  methods: {
+    validateName() {
+      if (!this.formData.name) {
+        this.errors.name = 'Name is required'
+        return false
+      }
+      if (this.formData.name.trim().length < 2) {
+        this.errors.name = 'Name must be at least 2 characters'
+        return false
+      }
+      this.errors.name = ''
+      return true
+    },
+    
+    validateEmail() {
+      if (!this.formData.email) {
+        this.errors.email = 'Email is required'
+        return false
+      }
+      if (!isValidEmail(this.formData.email)) {
+        this.errors.email = 'Please enter a valid email address'
+        return false
+      }
+      this.errors.email = ''
+      return true
+    },
+    
+    validatePassword() {
+      if (!this.formData.password) {
+        this.errors.password = 'Password is required'
+        return false
+      }
+      
+      const validation = validatePassword(this.formData.password)
+      if (!validation.isValid) {
+        this.errors.password = validation.message
+        return false
+      }
+      
+      this.errors.password = ''
+      return true
+    },
+    
+    validateTimezone() {
+      if (!this.formData.timezone) {
+        this.errors.timezone = 'Timezone is required'
+        return false
+      }
+      this.errors.timezone = ''
+      return true
+    },
+    
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword
+    },
+    
+    formatTimezoneLabel(timezone) {
+      return formatTimezoneCurrentLabel(timezone.tz)
+    },
+    
+    showTerms() {
+      // TODO: Implement terms modal or navigation
+      console.log('Show terms of service')
+    },
+    
+    showPrivacy() {
+      // TODO: Implement privacy policy modal or navigation
+      console.log('Show privacy policy')
+    },
+    
+    async handleSignup() {
+      // Validate all fields
+      const nameValid = this.validateName()
+      const emailValid = this.validateEmail()
+      const passwordValid = this.validatePassword()
+      const timezoneValid = this.validateTimezone()
+      
+      if (!this.formData.agreeToTerms) {
+        this.errors.agreeToTerms = 'You must agree to the terms and conditions'
+        return
+      }
+      
+      if (!nameValid || !emailValid || !passwordValid || !timezoneValid) {
+        return
+      }
+      
+      this.isLoading = true
+      
+      try {
+        const authStore = useAuthStore()
+        const userData = await authStore.mockSignup({
+          name: this.formData.name.trim(),
+          email: this.formData.email.trim(),
+          password: this.formData.password,
+          timezone: this.formData.timezone
+        })
+        
+        console.log('SignupCard: Signup successful', userData)
+        this.$emit('signup', userData)
+        
+        // Reset form
+        this.formData = {
+          name: '',
+          email: '',
+          password: '',
+          timezone: '',
+          agreeToTerms: false
+        }
+        this.errors = {
+          name: '',
+          email: '',
+          password: '',
+          timezone: '',
+          agreeToTerms: ''
+        }
+        
+      } catch (error) {
+        console.error('SignupCard: Signup failed', error)
+        
+        // Handle specific error cases
+        if (error.message.includes('User already exists')) {
+          this.errors.email = 'An account with this email already exists'
+        } else {
+          this.errors.email = 'Signup failed. Please try again.'
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    switchToLogin() {
+      this.$emit('switch-to-login')
     }
-  ]
-}
-
-// Methods
-const validateField = (fieldName) => {
-  console.log(`SignupCard: Validating field ${fieldName}`)
-  // Validation is handled by BaseForm
-}
-
-const handleSubmit = async ({ formData: data, event }) => {
-  console.log('SignupCard: Form submitted', data)
-  
-  try {
-    errorMessage.value = ''
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // Use mock signup with validation
-    const userData = await authStore.mockSignup({
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      timezone: data.timezone
-    })
-    
-    console.log('SignupCard: Signup successful', userData)
-    emit('signup', userData)
-    
-  } catch (error) {
-    console.error('SignupCard: Signup failed', error)
-    errorMessage.value = error.message || ERROR_MESSAGES.GENERIC
-    emit('error', error)
   }
 }
-
-// Computed properties
-const isFormValid = computed(() => {
-  const requiredFields = ['name', 'email', 'password', 'confirmPassword', 'timezone']
-  const requiredValidation = validateRequired(formData, requiredFields)
-  
-  return requiredValidation.isValid &&
-         isValidEmail(formData.email) &&
-         validatePassword(formData.password).isValid &&
-         formData.password === formData.confirmPassword &&
-         formData.acceptTerms
-})
 </script>
 
 <style scoped>
 .signup-card {
-  max-width: 450px;
-  margin: 0 auto;
+  width: 100%;
 }
 
-.signup-card--loading {
-  opacity: 0.8;
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.form-field {
-  margin-bottom: 1.5rem;
-}
-
-.form-field--checkbox {
-  margin-bottom: 1rem;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .form-label {
-  display: block;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  color: var(--color-text-primary, #1f2937);
+  margin: 0;
 }
 
 .form-input,
 .form-select {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid var(--border-primary);
-  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-border, #e5e7eb);
+  border-radius: 0.5rem;
   font-size: 1rem;
-  transition: all 0.2s;
-  background: white;
+  transition: all 0.2s ease;
+  background: var(--color-background, #ffffff);
+  color: var(--color-text-primary, #1f2937);
+}
+
+.form-select {
+  cursor: pointer;
 }
 
 .form-input:focus,
 .form-select:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--color-primary, #3b82f6);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-input--error,
 .form-select--error {
-  border-color: #ef4444;
+  border-color: var(--color-error, #ef4444);
+}
+
+.form-input--error:focus,
+.form-select--error:focus {
+  border-color: var(--color-error, #ef4444);
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-.checkbox-label {
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: var(--color-text-secondary, #6b7280);
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--color-text-primary, #1f2937);
+}
+
+.password-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.password-strength {
+  margin-top: 0.5rem;
+}
+
+.password-strength-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--color-border, #e5e7eb);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.password-strength-fill {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.password-strength-fill.weak {
+  background: var(--color-error, #ef4444);
+}
+
+.password-strength-fill.fair {
+  background: var(--color-warning, #f59e0b);
+}
+
+.password-strength-fill.strong {
+  background: var(--color-success, #10b981);
+}
+
+.password-strength-text {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #6b7280);
+  text-align: right;
+}
+
+.checkbox-wrapper {
   display: flex;
   align-items: flex-start;
+  gap: 0.75rem;
   cursor: pointer;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
 }
 
 .checkbox-input {
-  margin-right: 0.5rem;
+  margin: 0;
   width: 1rem;
   height: 1rem;
-  margin-top: 0.1rem;
-  flex-shrink: 0;
+  accent-color: var(--color-primary, #3b82f6);
 }
 
-.checkbox-text {
-  user-select: none;
+.checkbox-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6b7280);
+  line-height: 1.5;
 }
 
-.link {
-  color: var(--color-primary);
+.terms-link {
+  color: var(--color-primary, #3b82f6);
   text-decoration: underline;
-  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.link:hover {
-  color: var(--color-primary-dark);
+.terms-link:hover {
+  color: var(--color-primary-dark, #1d4ed8);
 }
 
 .form-error {
-  color: #ef4444;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-error, #ef4444);
+  margin: 0;
 }
 
-.form-error-message {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+.form-actions {
+  margin-top: 0.5rem;
 }
 
-.signup-card__footer {
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--color-primary, #3b82f6) 0%, var(--color-primary-dark, #1d4ed8) 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+}
+
+.btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+}
+
+.btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px 0 rgba(59, 130, 246, 0.25);
+}
+
+.btn--full {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.form-footer {
   text-align: center;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
+  margin-top: 1rem;
+}
+
+.form-footer-text {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6b7280);
+  margin: 0;
+}
+
+.form-link {
+  background: none;
+  border: none;
+  color: var(--color-primary, #3b82f6);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.form-link:hover {
+  color: var(--color-primary-dark, #1d4ed8);
 }
 
 /* Responsive design */
-@media (max-width: 480px) {
-  .signup-card {
-    margin: 0 1rem;
+@media (max-width: 640px) {
+  .signup-form {
+    gap: 1.25rem;
   }
   
   .form-input,
   .form-select {
-    padding: 0.6rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+  
+  .btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .checkbox-wrapper {
+    gap: 0.5rem;
+  }
+  
+  .checkbox-label {
+    font-size: 0.8125rem;
   }
 }
 </style>

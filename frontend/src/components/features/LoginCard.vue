@@ -1,277 +1,372 @@
-<!-- LoginCard.vue - Component for user login -->
 <template>
-  <BaseCard 
-    title="Sign In" 
-    class="login-card"
-    :class="{ 'login-card--loading': loading }"
-  >
-    <BaseForm
-      :model-value="formData"
-      :rules="validationRules"
-      :disabled="disabled"
-      :loading="loading"
-      submit-text="Sign In"
-      @submit="handleSubmit"
-    >
-      <template #default="{ formData, errors }">
-        <!-- Email Field -->
-        <div class="form-field">
-          <label for="login-email" class="form-label">Email Address</label>
-          <input
-            id="login-email"
-            v-model="formData.email"
-            type="email"
-            class="form-input"
-            :class="{ 'form-input--error': errors.email }"
-            placeholder="Enter your email"
-            :disabled="disabled || loading"
-            @blur="validateField('email')"
-          />
-          <div v-if="errors.email" class="form-error">
-            {{ errors.email }}
-          </div>
-        </div>
+  <div class="login-card">
+    <form @submit.prevent="handleLogin" class="login-form">
+      <div class="form-group">
+        <label for="login-email" class="form-label">Email</label>
+        <input
+          id="login-email"
+          v-model="formData.email"
+          type="email"
+          class="form-input"
+          :class="{ 'form-input--error': errors.email }"
+          placeholder="Enter your email"
+          required
+          autocomplete="email"
+          @blur="validateEmail"
+        />
+        <div v-if="errors.email" class="form-error">{{ errors.email }}</div>
+      </div>
 
-        <!-- Password Field -->
-        <div class="form-field">
-          <label for="login-password" class="form-label">Password</label>
+      <div class="form-group">
+        <label for="login-password" class="form-label">Password</label>
+        <div class="password-input-wrapper">
           <input
             id="login-password"
             v-model="formData.password"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
             class="form-input"
             :class="{ 'form-input--error': errors.password }"
             placeholder="Enter your password"
-            :disabled="disabled || loading"
-            @blur="validateField('password')"
+            required
+            autocomplete="current-password"
+            @blur="validatePassword"
           />
-          <div v-if="errors.password" class="form-error">
-            {{ errors.password }}
-          </div>
+          <button
+            type="button"
+            class="password-toggle"
+            @click="togglePasswordVisibility"
+            :aria-label="showPassword ? 'Hide password' : 'Show password'"
+          >
+            <svg v-if="!showPassword" class="password-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            <svg v-else class="password-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+            </svg>
+          </button>
         </div>
-
-        <!-- Remember Me -->
-        <div class="form-field form-field--checkbox">
-          <label class="checkbox-label">
-            <input
-              v-model="formData.rememberMe"
-              type="checkbox"
-              class="checkbox-input"
-              :disabled="disabled || loading"
-            />
-            <span class="checkbox-text">Remember me</span>
-          </label>
-        </div>
-
-        <!-- Error Message -->
-        <div v-if="errorMessage" class="form-error-message">
-          {{ errorMessage }}
-        </div>
-      </template>
-    </BaseForm>
-
-    <!-- Footer Actions -->
-    <template #footer>
-      <div class="login-card__footer">
-        <BaseButton
-          variant="secondary"
-          size="small"
-          @click="$emit('switch-to-signup')"
-          :disabled="disabled || loading"
-        >
-          Don't have an account? Sign up
-        </BaseButton>
+        <div v-if="errors.password" class="form-error">{{ errors.password }}</div>
       </div>
-    </template>
-  </BaseCard>
+
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn--primary btn--full"
+          :disabled="isLoading || !isFormValid"
+        >
+          <span v-if="isLoading" class="btn-spinner"></span>
+          {{ isLoading ? 'Signing in...' : 'Sign in' }}
+        </button>
+      </div>
+
+      <div class="form-footer">
+        <p class="form-footer-text">
+          Don't have an account?
+          <button
+            type="button"
+            class="form-link"
+            @click="switchToSignup"
+          >
+            Sign up
+          </button>
+        </p>
+      </div>
+    </form>
+  </div>
 </template>
 
-<script setup>
-import { ref, reactive, computed } from 'vue'
+<script>
 import { useAuthStore } from '@/store/modules/auth'
-import BaseCard from '@/components/common/BaseCard.vue'
-import BaseForm from '@/components/common/BaseForm.vue'
-import BaseButton from '@/components/common/BaseButton.vue'
 import { isValidEmail } from '@/utils/validation'
-import { VALIDATION_RULES, ERROR_MESSAGES } from '@/utils/constants'
 
-// Props definition
-const props = defineProps({
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  initialEmail: {
-    type: String,
-    default: ''
-  }
-})
-
-// Emits definition
-const emit = defineEmits(['login', 'switch-to-signup', 'error'])
-
-// Store
-const authStore = useAuthStore()
-
-// Form data
-const formData = reactive({
-  email: props.initialEmail,
-  password: '',
-  rememberMe: false
-})
-
-// Error state
-const errorMessage = ref('')
-
-// Validation rules using utility functions
-const validationRules = {
-  email: [
-    { required: true, message: 'Email is required' },
-    { 
-      validator: (value) => isValidEmail(value) || 'Please enter a valid email address'
+export default {
+  name: 'LoginCard',
+  emits: ['login', 'switch-to-signup'],
+  data() {
+    return {
+      formData: {
+        email: '',
+        password: ''
+      },
+      errors: {
+        email: '',
+        password: ''
+      },
+      showPassword: false,
+      isLoading: false
     }
-  ],
-  password: [
-    { required: true, message: 'Password is required' },
-    { min: VALIDATION_RULES.PASSWORD.MIN_LENGTH, message: `Password must be at least ${VALIDATION_RULES.PASSWORD.MIN_LENGTH} characters` }
-  ]
-}
-
-// Methods
-const validateField = (fieldName) => {
-  console.log(`LoginCard: Validating field ${fieldName}`)
-  // Validation is handled by BaseForm
-}
-
-const handleSubmit = async ({ formData: data, event }) => {
-  console.log('LoginCard: Form submitted', data)
-  
-  try {
-    errorMessage.value = ''
+  },
+  computed: {
+    isFormValid() {
+      return this.formData.email && 
+             this.formData.password && 
+             !this.errors.email && 
+             !this.errors.password
+    }
+  },
+  methods: {
+    validateEmail() {
+      if (!this.formData.email) {
+        this.errors.email = 'Email is required'
+        return false
+      }
+      if (!isValidEmail(this.formData.email)) {
+        this.errors.email = 'Please enter a valid email address'
+        return false
+      }
+      this.errors.email = ''
+      return true
+    },
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    validatePassword() {
+      if (!this.formData.password) {
+        this.errors.password = 'Password is required'
+        return false
+      }
+      if (this.formData.password.length < 6) {
+        this.errors.password = 'Password must be at least 6 characters'
+        return false
+      }
+      this.errors.password = ''
+      return true
+    },
     
-    // Use mock login with validation
-    const userData = await authStore.mockLogin(data.email, data.password)
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword
+    },
     
-    console.log('LoginCard: Login successful', userData)
-    emit('login', userData)
+    async handleLogin() {
+      // Validate all fields
+      const emailValid = this.validateEmail()
+      const passwordValid = this.validatePassword()
+      
+      if (!emailValid || !passwordValid) {
+        return
+      }
+      
+      this.isLoading = true
+      
+      try {
+        const authStore = useAuthStore()
+        const userData = await authStore.mockLogin(this.formData.email, this.formData.password)
+        
+        console.log('LoginCard: Login successful', userData)
+        this.$emit('login', userData)
+        
+        // Reset form
+        this.formData = { email: '', password: '' }
+        this.errors = { email: '', password: '' }
+        
+      } catch (error) {
+        console.error('LoginCard: Login failed', error)
+        
+        // Handle specific error cases
+        if (error.message.includes('User not found')) {
+          this.errors.email = 'No account found with this email'
+        } else if (error.message.includes('Invalid password')) {
+          this.errors.password = 'Incorrect password'
+        } else {
+          this.errors.password = 'Login failed. Please try again.'
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
     
-  } catch (error) {
-    console.error('LoginCard: Login failed', error)
-    errorMessage.value = error.message || ERROR_MESSAGES.UNAUTHORIZED
-    emit('error', error)
+    switchToSignup() {
+      this.$emit('switch-to-signup')
+    }
   }
 }
-
-// Computed properties
-const isFormValid = computed(() => {
-  return formData.email && formData.password && 
-         isValidEmail(formData.email) && 
-         formData.password.length >= VALIDATION_RULES.PASSWORD.MIN_LENGTH
-})
 </script>
 
 <style scoped>
 .login-card {
-  max-width: 400px;
-  margin: 0 auto;
+  width: 100%;
 }
 
-.login-card--loading {
-  opacity: 0.8;
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.form-field {
-  margin-bottom: 1.5rem;
-}
-
-.form-field--checkbox {
-  margin-bottom: 1rem;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .form-label {
-  display: block;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  color: var(--color-text-primary, #1f2937);
+  margin: 0;
 }
 
 .form-input {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid var(--border-primary);
-  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--color-border, #e5e7eb);
+  border-radius: 0.5rem;
   font-size: 1rem;
-  transition: all 0.2s;
-  background: white;
+  transition: all 0.2s ease;
+  background: var(--color-background, #ffffff);
+  color: var(--color-text-primary, #1f2937);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--color-primary, #3b82f6);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-input--error {
-  border-color: #ef4444;
+  border-color: var(--color-error, #ef4444);
+}
+
+.form-input--error:focus {
+  border-color: var(--color-error, #ef4444);
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-.checkbox-label {
+.password-input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
   cursor: pointer;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+  padding: 0.25rem;
+  color: var(--color-text-secondary, #6b7280);
+  transition: color 0.2s ease;
 }
 
-.checkbox-input {
-  margin-right: 0.5rem;
-  width: 1rem;
-  height: 1rem;
+.password-toggle:hover {
+  color: var(--color-text-primary, #1f2937);
 }
 
-.checkbox-text {
-  user-select: none;
+.password-icon {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .form-error {
-  color: #ef4444;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-error, #ef4444);
+  margin: 0;
 }
 
-.form-error-message {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+.form-actions {
+  margin-top: 0.5rem;
 }
 
-.login-card__footer {
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--color-primary, #3b82f6) 0%, var(--color-primary-dark, #1d4ed8) 100%);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
+}
+
+.btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.35);
+}
+
+.btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px 0 rgba(59, 130, 246, 0.25);
+}
+
+.btn--full {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.form-footer {
   text-align: center;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
+  margin-top: 1rem;
+}
+
+.form-footer-text {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6b7280);
+  margin: 0;
+}
+
+.form-link {
+  background: none;
+  border: none;
+  color: var(--color-primary, #3b82f6);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.form-link:hover {
+  color: var(--color-primary-dark, #1d4ed8);
 }
 
 /* Responsive design */
-@media (max-width: 480px) {
-  .login-card {
-    margin: 0 1rem;
+@media (max-width: 640px) {
+  .login-form {
+    gap: 1.25rem;
   }
   
   .form-input {
-    padding: 0.6rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+  
+  .btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
   }
 }
 </style>

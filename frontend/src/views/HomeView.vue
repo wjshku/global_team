@@ -1,21 +1,36 @@
 <template>
   <div class="home-view">
-    <!-- Welcome Section -->
-    <section class="welcome-section">
-      <h1 class="welcome-title">
-        <span class="welcome-icon">🌍</span>
-        Global Team Manager
-      </h1>
-      <p class="welcome-description">
-        Coordinate your distributed team across different timezones and schedule meetings efficiently.
-      </p>
-    </section>
 
     <!-- Authentication Section -->
     <section v-if="!isLoggedIn" class="auth-section">
-      <div class="auth-cards">
-        <LoginCard @login-success="handleLoginSuccess" />
-        <SignupCard @signup-success="handleSignupSuccess" />
+      <div class="auth-cta">
+        <h2 class="auth-cta-title">Get Started</h2>
+        <p class="auth-cta-description">
+          Join Global Team Manager to coordinate with your distributed team across time zones.
+        </p>
+        <div class="auth-cta-actions">
+          <BaseButton 
+            @click="navigateToSignup" 
+            variant="primary"
+            size="large"
+            class="auth-cta-button"
+          >
+            <span class="button-icon">🚀</span>
+            Get Started
+          </BaseButton>
+          <BaseButton 
+            @click="navigateToLogin" 
+            variant="secondary"
+            size="large"
+            class="auth-cta-button"
+          >
+            <span class="button-icon">🔑</span>
+            Sign In
+          </BaseButton>
+        </div>
+        <p class="auth-cta-note">
+          Create a new account or sign in to your existing account
+        </p>
       </div>
     </section>
 
@@ -120,16 +135,12 @@ import { useMeetingsStore } from '@/store/modules/meetings'
 import { useUIStore } from '@/store/modules/ui'
 import BaseCard from '@/components/common/BaseCard.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
-import LoginCard from '@/components/features/LoginCard.vue'
-import SignupCard from '@/components/features/SignupCard.vue'
 
 export default {
   name: 'HomeView',
   components: {
     BaseCard,
-    BaseButton,
-    LoginCard,
-    SignupCard
+    BaseButton
   },
   setup() {
     const router = useRouter()
@@ -167,17 +178,14 @@ export default {
     })
     
     // Methods
-    const handleLoginSuccess = (userData) => {
-      console.log('HomeView: Login successful', userData)
-      // Store will be updated by the LoginCard component
-      // Force reactivity update
-      authStore.login(userData)
+    const navigateToSignup = () => {
+      console.log('HomeView: Navigating to signup page')
+      router.push('/signup')
     }
     
-    const handleSignupSuccess = (userData) => {
-      console.log('HomeView: Signup successful', userData)
-      // Store will be updated by the SignupCard component
-      authStore.login(userData)
+    const navigateToLogin = () => {
+      console.log('HomeView: Navigating to login page')
+      router.push('/login')
     }
     
     const navigateToMembers = () => {
@@ -238,8 +246,8 @@ export default {
       meetingCount,
       
       // Methods
-      handleLoginSuccess,
-      handleSignupSuccess,
+      navigateToSignup,
+      navigateToLogin,
       navigateToMembers,
       navigateToTeams,
       navigateToMeetings
@@ -254,44 +262,64 @@ export default {
   padding: 2rem 0;
 }
 
-.welcome-section {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.welcome-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.welcome-icon {
-  font-size: 3rem;
-}
-
-.welcome-description {
-  font-size: 1.2rem;
-  color: var(--text-secondary);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
 
 .auth-section {
   margin-bottom: 3rem;
 }
 
-.auth-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  max-width: 800px;
+.auth-cta {
+  text-align: center;
+  max-width: 600px;
   margin: 0 auto;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.auth-cta-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-cta-description {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.auth-cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.auth-cta-button {
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.button-icon {
+  font-size: 1.2rem;
+}
+
+.auth-cta-note {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0;
 }
 
 .main-content {
@@ -389,24 +417,18 @@ export default {
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .welcome-title {
-    font-size: 2rem;
-  }
-  
-  .welcome-icon {
-    font-size: 2.5rem;
-  }
-  
-  .welcome-description {
-    font-size: 1.1rem;
-  }
-  
   .content-grid {
     grid-template-columns: 1fr;
   }
   
-  .auth-cards {
-    grid-template-columns: 1fr;
+  .auth-cta-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .auth-cta-button {
+    width: 100%;
+    max-width: 280px;
   }
 }
 </style>
