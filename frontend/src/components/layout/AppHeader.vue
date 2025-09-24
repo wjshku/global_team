@@ -23,10 +23,7 @@
         </template>
         
         <template v-else>
-          <button @click="navigateToSignup" class="signup-btn">
-            <span class="btn-icon">🚀</span>
-            Get Started
-          </button>
+          <!-- Removed redundant Get Started button - now handled by HomeView -->
         </template>
       </div>
     </div>
@@ -55,9 +52,7 @@ const handleLogout = () => {
   router.push('/')
 }
 
-const navigateToSignup = () => {
-  router.push('/signup')
-}
+// Removed navigateToSignup function - no longer needed
 
 const appName = APP_NAME
 </script>
@@ -153,30 +148,7 @@ const appName = APP_NAME
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.signup-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.signup-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-1px);
-}
-
-.btn-icon {
-  font-size: 1rem;
-}
+/* Removed signup button styles - no longer needed */
 
 @media (max-width: 768px) {
   .header-container {
