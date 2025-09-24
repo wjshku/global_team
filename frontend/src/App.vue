@@ -46,18 +46,7 @@ export default {
   color: var(--text-primary);
 }
 
-/* Global styles */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  line-height: 1.6;
-  color: var(--text-primary);
-  background-color: var(--bg-secondary);
-}
+/* Global styles - moved to main.css for better organization */
 
 /* Router transition styles */
 .router-enter-active,

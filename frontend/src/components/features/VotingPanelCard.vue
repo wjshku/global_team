@@ -418,7 +418,7 @@ function formatOptionText(option) {
 }
 
 .status-indicator--voted {
-  background: #3b82f6;
+  background: var(--color-primary);
 }
 
 .status-indicator--closed {
@@ -488,7 +488,7 @@ function formatOptionText(option) {
 }
 
 .voting-option--user-vote {
-  border-color: #3b82f6;
+  border-color: var(--color-primary);
   background: #eff6ff;
 }
 
@@ -546,7 +546,7 @@ function formatOptionText(option) {
   right: 0.5rem;
   width: 20px;
   height: 20px;
-  background: #3b82f6;
+  background: var(--color-primary);
   color: white;
   border-radius: 50%;
   display: flex;

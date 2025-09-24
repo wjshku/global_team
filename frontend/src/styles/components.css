@@ -42,7 +42,8 @@
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
-/* Button variants */
+/* Button variants - DEPRECATED: Use BaseButton component instead */
+/* These classes are kept for backward compatibility but should be migrated to BaseButton */
 .btn {
   display: inline-flex;
   align-items: center;

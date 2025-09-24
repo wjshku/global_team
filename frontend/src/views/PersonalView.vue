@@ -274,7 +274,7 @@ const memberTimezoneLabel = computed(() => {
 .profile-main { display: flex; align-items: center; gap: 12px; }
 .avatar {
   width: 48px; height: 48px; border-radius: 50%;
-  background: var(--color-primary, #3b82f6);
+  background: var(--color-primary);
   color: #fff; display: flex; align-items: center; justify-content: center;
   font-weight: 700;
 }

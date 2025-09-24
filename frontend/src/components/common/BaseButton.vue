@@ -109,30 +109,30 @@ const handleClick = (event) => {
 
 .base-button:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgba(45, 55, 72, 0.5);
 }
 
 /* Variant styles */
 .base-button--primary {
-  background-color: #2563eb;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .base-button--primary:hover {
-  background-color: #1d4ed8;
+  background-color: var(--color-primary-hover);
 }
 
 .base-button--primary:focus {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgba(45, 55, 72, 0.5);
 }
 
 .base-button--secondary {
-  background-color: #e5e7eb;
-  color: #111827;
+  background-color: var(--color-gray-200);
+  color: var(--text-primary);
 }
 
 .base-button--secondary:hover {
-  background-color: #d1d5db;
+  background-color: var(--color-gray-300);
 }
 
 .base-button--secondary:focus {
@@ -140,12 +140,12 @@ const handleClick = (event) => {
 }
 
 .base-button--danger {
-  background-color: #dc2626;
-  color: white;
+  background-color: var(--color-danger);
+  color: var(--color-white);
 }
 
 .base-button--danger:hover {
-  background-color: #b91c1c;
+  background-color: var(--color-danger-hover);
 }
 
 .base-button--danger:focus {

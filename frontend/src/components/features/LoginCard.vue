@@ -218,7 +218,7 @@ export default {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--color-primary, #3b82f6);
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -287,7 +287,7 @@ export default {
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, var(--color-primary, #3b82f6) 0%, var(--color-primary-dark, #1d4ed8) 100%);
+  background: var(--gradient-primary);
   color: white;
   box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.25);
 }
@@ -342,7 +342,7 @@ export default {
 .form-link {
   background: none;
   border: none;
-  color: var(--color-primary, #3b82f6);
+  color: var(--color-primary);
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
@@ -350,7 +350,7 @@ export default {
 }
 
 .form-link:hover {
-  color: var(--color-primary-dark, #1d4ed8);
+  color: var(--color-primary-dark);
 }
 
 /* Responsive design */

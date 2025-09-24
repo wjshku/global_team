@@ -272,7 +272,7 @@ export default {
   max-width: 600px;
   margin: 0 auto;
   padding: 3rem 2rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: var(--gradient-card);
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
@@ -282,7 +282,7 @@ export default {
   font-weight: 700;
   color: var(--color-primary);
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

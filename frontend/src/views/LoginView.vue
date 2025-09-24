@@ -116,7 +116,7 @@ export default {
   color: var(--color-text-primary, #1f2937);
   margin: 0 0 0.75rem 0;
   letter-spacing: -0.025em;
-  background: linear-gradient(135deg, #1f2937 0%, #4f46e5 100%);
+  background: var(--gradient-secondary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -154,7 +154,7 @@ export default {
 
 /* Focus states for accessibility */
 .auth-card:focus-within {
-  outline: 2px solid var(--color-primary, #3b82f6);
+  outline: 2px solid var(--color-primary);
   outline-offset: 4px;
 }
 

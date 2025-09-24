@@ -351,9 +351,9 @@ onBeforeUnmount(() => {
 .tz-select { padding: 6px 8px; border: 1px solid var(--border-primary, #e5e7eb); border-radius: 6px; }
 
 .day-actions { display: flex; gap: 8px; }
-.btn { padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; background: var(--color-primary, #3b82f6); color: #fff; }
+.btn { padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; background: var(--color-primary); color: #fff; }
 .btn--secondary { background: #64748b; }
-.link { background: none; border: none; color: var(--color-primary, #3b82f6); cursor: pointer; padding: 0; }
+.link { background: none; border: none; color: var(--color-primary); cursor: pointer; padding: 0; }
 
 .calendar-grid { border: 1px solid var(--border-primary, #e5e7eb); border-radius: 8px; overflow: hidden; }
 .grid-header, .row { display: grid; grid-template-columns: 90px repeat(7, 1fr); }
@@ -374,18 +374,18 @@ onBeforeUnmount(() => {
 .heat-25 { background: #c7d2fe; }
 .heat-50 { background: #93c5fd; }
 .heat-75 { background: #60a5fa; }
-.heat-100 { background: #3b82f6; }
+.heat-100 { background: var(--color-primary); }
 
 .legend { display: flex; gap: 12px; align-items: center; font-size: 12px; color: #475569; }
 .legend-item { display: flex; gap: 6px; align-items: center; }
 .legend-swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
-.legend-swatch.on { background: #3b82f6; }
+.legend-swatch.on { background: var(--color-primary); }
 .legend-swatch.off { background: #e2e8f0; }
 .legend-swatch.heat-0 { background: #f1f5f9; }
 .legend-swatch.heat-25 { background: #c7d2fe; }
 .legend-swatch.heat-50 { background: #93c5fd; }
 .legend-swatch.heat-75 { background: #60a5fa; }
-.legend-swatch.heat-100 { background: #3b82f6; }
+.legend-swatch.heat-100 { background: var(--color-primary); }
 
 .heatmap-tooltip {
   position: absolute;

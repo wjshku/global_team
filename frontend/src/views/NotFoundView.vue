@@ -38,7 +38,7 @@ export default {
 .not-found-title {
   font-size: 6rem;
   font-weight: 700;
-  color: var(--color-primary, #3b82f6);
+  color: var(--color-primary);
   margin: 0 0 1rem 0;
   line-height: 1;
 }
@@ -64,7 +64,7 @@ export default {
 .home-link {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background: var(--color-primary, #3b82f6);
+  background: var(--color-primary);
   color: white;
   text-decoration: none;
   border-radius: 8px;
@@ -73,7 +73,7 @@ export default {
 }
 
 .home-link:hover {
-  background: var(--color-primary-dark, #2563eb);
+  background: var(--color-primary-dark);
 }
 
 @media (max-width: 640px) {
